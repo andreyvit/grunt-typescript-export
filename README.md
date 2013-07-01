@@ -27,6 +27,16 @@ export class NodeStreamCarrier extends events.EventEmitter {
 }
 ```
 
+Rewrites applied:
+
+1. All references are de-duplicated and moved to the top of the file (they don't work inside the module declaration).
+
+2. All imports de-deduplicaed and moved to the top of the module declaration (they don't work at the top level).
+
+3. Referenced paths that start with `../` are modified to start with `./` (because presumably you are generating `/index.d.ts` from `/lib/*.d.ts`), this part should be made smarter.
+
+4. `declare` is dropped from all internal declaration (nested `declare`s are invalid).
+
 
 ## Getting Started
 
