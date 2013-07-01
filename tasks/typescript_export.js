@@ -11,6 +11,7 @@ module.exports = function(grunt) {
       var references = [];
       var imports = [];
       var sources = [];
+      var localImportsToStrip = [];
 
       grunt.file.expand(group.src).forEach(function (file) {
         if (!grunt.file.exists(file)) {
@@ -27,8 +28,17 @@ module.exports = function(grunt) {
             }
             return false;
           } else if (line.match(/^import /)) {
-            if (imports.indexOf(line) === -1) {
-              imports.push(line);
+            var m;
+            if (m = line.match(/^import (\w+) = require\('.\//)) {
+              var name = m[1];
+              grunt.log.writeln('File "' + file + '" imports local module "' + name + '"');
+              if (localImportsToStrip.indexOf(name) === -1) {
+                localImportsToStrip.push(name);
+              }
+            } else {
+              if (imports.indexOf(line) === -1) {
+                imports.push(line);
+              }
             }
             return false;
           } else {
@@ -40,6 +50,13 @@ module.exports = function(grunt) {
         content = content.replace(/ declare /g, ' ').replace(/\bdeclare /g, '');
 
         sources.push({ content: content, file: file });
+      });
+
+      sources.forEach(function(source) {
+        localImportsToStrip.forEach(function(name) {
+          var re = new RegExp('\\b' + name + '\\.');
+          source.content = source.content.replace(re, '');
+        });
       });
 
       if (references.length > 0) {

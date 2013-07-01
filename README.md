@@ -37,6 +37,8 @@ Rewrites applied:
 
 4. `declare` is dropped from all internal declaration (nested `declare`s are invalid).
 
+5. All local imports (`import foo = require('./something')`) are removed, and the corresponding references are rewritten to use the bare name (`foo.Bar` is replaced with `Bar`).
+
 
 ## Getting Started
 
