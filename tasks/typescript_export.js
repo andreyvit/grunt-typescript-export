@@ -3,9 +3,8 @@
 module.exports = function(grunt) {
 
   grunt.registerMultiTask('typescript_export', 'Concat all .d.ts into a single file for external clients to import.', function() {
-    var options = this.options({
-      name: grunt.config('pkg.name')
-    });
+    grunt.config.requires('pkg.name');
+    var packageName = grunt.config('pkg.name');
 
     this.files.forEach(function(group) {
       var snippets = [];
@@ -50,7 +49,7 @@ module.exports = function(grunt) {
         snippets.push("\n");
       }
 
-      snippets.push('declare module "' + options.name + '" {\n\n');
+      snippets.push('declare module "' + packageName + '" {\n\n');
 
       if (imports.length > 0) {
         imports.forEach(function(line) {
